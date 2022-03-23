@@ -1,0 +1,77 @@
+//
+//  ExpandCollapseTableViewHeader.swift
+//  HealthApp
+//
+//  Created by Pawan Kumar on 27/10/21.
+//
+
+import UIKit
+
+protocol ExpandCollapseTableViewHeaderDelegate {
+    func toggleSection(_ header: ExpandCollapseTableViewHeader, section: Int)
+}
+
+class ExpandCollapseTableViewHeader: UITableViewHeaderFooterView {
+
+    var delegate: ExpandCollapseTableViewHeaderDelegate?
+    var section: Int = 0
+    
+    let titleLabel = UILabel()
+    let arrowLabel = UILabel()
+    
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        
+        // Content View
+        contentView.backgroundColor = UIColor(hex: 0x2E3944)
+        
+        let marginGuide = contentView.layoutMarginsGuide
+        
+        // Arrow label
+        contentView.addSubview(arrowLabel)
+        arrowLabel.textColor = UIColor.white
+        arrowLabel.translatesAutoresizingMaskIntoConstraints = false
+        arrowLabel.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        arrowLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
+        arrowLabel.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor).isActive = true
+        arrowLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
+        
+        // Title label
+        contentView.addSubview(titleLabel)
+        titleLabel.textColor = UIColor.white
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
+        titleLabel.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor).isActive = true
+        titleLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor).isActive = true
+        
+        //
+        // Call tapHeader when tapping on this header
+        //
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ExpandCollapseTableViewHeader.tapHeader(_:))))
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //
+    // Trigger toggle section when tapping on the header
+    //
+    @objc func tapHeader(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard let cell = gestureRecognizer.view as? ExpandCollapseTableViewHeader else {
+            return
+        }
+        
+        delegate?.toggleSection(self, section: cell.section)
+    }
+    
+    func setCollapsed(_ collapsed: Bool) {
+        //
+        // Animate the arrow rotation (see Extensions.swf)
+        //
+        arrowLabel.rotate(collapsed ? 0.0 : .pi / 2)
+    }
+    
+
+}
